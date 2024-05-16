@@ -19,6 +19,7 @@
 % and Marteen Samuel. Supervision: Gaëtan Garcia.
 %    - This program (using Samuel and Cichosz's work): Gaëtan Garcia
 
+% this is kohei
 RobotAndSensorDefinition ;
 DefineVariances ;
 
