@@ -19,11 +19,11 @@
 % and Marteen Samuel. Supervision: Gaëtan Garcia.
 %    - This program (using Samuel and Cichosz's work): Gaëtan Garcia
 
-% this is kohei
+
 RobotAndSensorDefinition ;
 DefineVariances ;
 
-X = [ 0, 0, 0*pi/180 ].' ;    % Set this according to robot initial posture (position and heading).
+X = [ 0, 0, pi/4 ].' ;    % Set this according to robot initial posture (position and heading).
 
 %Load the data file
 dataFile = uigetfile('data/*.txt','Select data file') ;
@@ -65,8 +65,8 @@ for i = 2 : nbLoops
     X = EvolutionModel( X , U ) ;
     
     % Calculate linear approximation of the system equation
-    A = [ *** ] ;
-    B = [ *** ] ;
+    A = [ 1-U(1)*sin(X(3)),1+U(1)*cos(X(3)),1 ] ;
+    B = [ cos(X(3)), sin(X(3)),  1] ;
        
     % Error propagation
     P = A*P*(A.') + B*Qbeta*(B.') + Qalpha ;
@@ -84,7 +84,10 @@ for i = 2 : nbLoops
     for measNumber = 1 : length(measures) 
         
         % Homogeneous transform of robot frame with respect to world frame
-        oTm = [ *** ] ;
+        oTm = [ cos(X(3)), -sin(X(3)), X(1);
+                sin(X(3)),  cos(X(3)), X(2);
+                0,               0,       1
+        ] ;
         mTo = inv(oTm) ;
         
         % Measurement vector: coordinates of the magnet in Rm.

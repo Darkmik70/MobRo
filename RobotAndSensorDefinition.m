@@ -7,6 +7,7 @@
 % Robot characteristics
 
 rwheel           = 21.5 ;      % Wheel radius
+lwheel           = 21.5 ;      % left wheel radius 
 trackGauge       = 112  ;      % Distance between the fixed wheels
 actualEncoderRes = 360  ;      % In dots per wheel rotation
 
