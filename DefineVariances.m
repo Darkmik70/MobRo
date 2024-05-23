@@ -3,8 +3,8 @@
 
 % Uncertainty on initial position of the robot.
 
-sigmaX     = 15/3 ;         % Determined by student
-sigmaY     = 15/3 ;         % Determined by student
+sigmaX     = 15/3 ;    %or 3     % Determined by student
+sigmaY     = 15/3 ;    %or 3     % Determined by student
 sigmaTheta = 15/3*pi/180 ;   % Determined by student
 Pinit = diag( [sigmaX^2 sigmaY^2 sigmaTheta^2] ) ;
 
@@ -17,7 +17,7 @@ Qgamma = diag( [sigmaXmeasurement^2 sigmaYmeasurement^2] ) ;
 
 % Input noise
 
-sigmaTuning = 0 ; 
+sigmaTuning = 0.05; 
 Qwheels = sigmaTuning^2 * eye(2) ;
 Qbeta   = jointToCartesian * Qwheels * jointToCartesian.' ; 
 

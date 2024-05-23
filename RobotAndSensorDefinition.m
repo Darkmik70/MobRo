@@ -18,7 +18,7 @@ dumbFactor        = 1                           ;
 encoderRes        = actualEncoderRes/dumbFactor ;
 
 maxSamplingFrequency = 20 ;
-subSamplingFactor    =  1 ;
+subSamplingFactor    = 4 ;%1 ;
 samplingFrequency    = maxSamplingFrequency/subSamplingFactor ;
 samplingPeriod       = 1/samplingFrequency ;
 
