@@ -13,15 +13,18 @@
 %       sensor (a sensor which detects a magnet).
 %   - You may comment out this graph when you don't need it anymore 
 %       (when you're done estimating the measurement noise).
-
+clear;
 %function PlotRawData
 
-RobotAndSensorDefinition ;
+RobotAndSensorDefinition ;  %define characteristics of the robot
 
 % Set the initial posture of the robot according to information given
 % in file "Programs and data".
 
-Xodo(:,1) = [ 0, 0, 0*pi/180 ].' ;    
+Xodo(:,1) = [ 0, 0, 0*pi/180 ].' ;    %for circles.txt, line1magnet.txt, oneloop.txt and twoloops.txt
+%Xodo(:,1) = [ 0, 0, pi/4 ].' ;    %for diagonal45degree.txt
+%Xodo(:,1) = [ 0, 27, 0*pi/180 ].' ;    %for line2magnets.txt
+
 
 %Load the data file
 dataFile = uigetfile('data/*.txt','Select data file') ;
@@ -45,9 +48,15 @@ for i = 2 : nbLoops
     deltaq = [ qR(i) - qR(i-1) ; 
                qL(i) - qL(i-1) ] ;
     U(:,i) = jointToCartesian * deltaq ;  % joint speed to Cartesian speed.
+    % jointToCartesian is in the bottom of RobotAndSensorDefinition
        
     % Predic state (here odometry)
-    Xodo(:,i) = EvolutionModel( Xodo(:,i-1) , U(:,i) ) ;
+    % first column of X is x (world frame)
+    % second column of X is y
+    % third one is theta
+    % first column of U is deltaD (translational velocity)
+    % second column of U is deltatheta (angular velocity)
+    Xodo(:,i) = EvolutionModel( Xodo(:,i-1) , U(:,i) ) ;  %we have to write
     
 end
 

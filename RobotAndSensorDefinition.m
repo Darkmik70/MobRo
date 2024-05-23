@@ -14,11 +14,11 @@ actualEncoderRes = 360  ;      % In dots per wheel rotation
 % encoder resolution by a certain factor.
 % Also, we use a lower sampling frequency
 
-dumbFactor        = 8                           ;
+dumbFactor        = 1                           ;
 encoderRes        = actualEncoderRes/dumbFactor ;
 
 maxSamplingFrequency = 20 ;
-subSamplingFactor    =  4 ;
+subSamplingFactor    =  1 ;
 samplingFrequency    = maxSamplingFrequency/subSamplingFactor ;
 samplingPeriod       = 1/samplingFrequency ;
 

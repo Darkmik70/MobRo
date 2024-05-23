@@ -18,11 +18,14 @@
 %    - First implementation (Matlab): EMARO1/ARIA1 project, Filip Cichosz
 % and Marteen Samuel. Supervision: Gaëtan Garcia.
 %    - This program (using Samuel and Cichosz's work): Gaëtan Garcia
+clear;
 
-RobotAndSensorDefinition ;
-DefineVariances ;
+RobotAndSensorDefinition ;  %define characteristics of the robot
+DefineVariances ;  % defines the various noise covariance matrices.
 
-X = [ 0, 0, 0*pi/180 ].' ;    % Set this according to robot initial posture (position and heading).
+X = [ 0, 0, 0*pi/180 ].' ;     %for circles.txt, line1magnet.txt, oneloop.txt and twoloops.txt
+%Xodo(:,1) = [ 0, 0, pi/4 ].' ;    %for diagonal45degree.txt
+%Xodo(:,1) = [ 0, 27, 0*pi/180 ].' ;    %for line2magnets.txt
 
 %Load the data file
 dataFile = uigetfile('data/*.txt','Select data file') ;
@@ -34,7 +37,7 @@ end
 dataFile = strrep(dataFile, '.txt', '') ;
 eval(['data = ',dataFile,'; clear ',dataFile]) ;
 
-P = Pinit ; 
+P = Pinit ;  %initial covariance matrix
 
 % Log data for display of results. Do not modify.
 
@@ -51,7 +54,7 @@ wbHandle = waitbar(0,'Computing...') ;
 
 for i = 2 : nbLoops 
     
-    t = (i-1)*samplingPeriod ;
+    t = (i-1)*samplingPeriod ; %time (samplingPeriod is in RobotAnd~.m)
     
     waitbar(i/nbLoops) ;
 
@@ -61,11 +64,20 @@ for i = 2 : nbLoops
     U = jointToCartesian * deltaq ;  % joint speed to Cartesian speed.
     
     % Predic state (here odometry)
-    X = EvolutionModel( X , U ) ;
+    % first column of X is x (world frame)
+    % second column of X is y
+    % third one is theta
+    % first column of U is deltaD (translational velocity)
+    % second column of U is deltatheta (angular velocity)
+    X = EvolutionModel( X , U ) ;  %almost same as PlotRawData.m
     
     % Calculate linear approximation of the system equation
-    A = [ *** ] ;
-    B = [ *** ] ;
+    A = [ 1, 0, -U(1)*sin(X(3));
+        0, 1, U(1)*cos(X(3));
+        0, 0, 1] ;
+    B = [ cos(X(3)), 0;
+        sin(X(3)) 0;
+        0, 1] ;
        
     % Error propagation
     P = A*P*(A.') + B*Qbeta*(B.') + Qalpha ;
@@ -83,12 +95,16 @@ for i = 2 : nbLoops
     for measNumber = 1 : length(measures) 
         
         % Homogeneous transform of robot frame with respect to world frame
-        oTm = [ *** ] ;
+        oTm = [ cos(X(3)), -sin(X(3)), X(1);
+            sin(X(3)), cos(X(3)) X(2);
+            0, 0, 1] ;
         mTo = inv(oTm) ;
         
         % Measurement vector: coordinates of the magnet in Rm.
-        Y = [ sensorPosAlongXm ; 
+        Y = [ sensorPosAlongXm ; %Position of linear sensor along Xm
               sensorRes*( measures(measNumber) - sensorOffset ) ] ;
+            %Distance between to Reed sensors*(~ - Number of the Reed
+            %sensor above Ym) p31
          
         % Now in homogeneous coordinates for calculations.
         mMeasMagnet = [ Y ;                
@@ -102,6 +118,7 @@ for i = 2 : nbLoops
         % Which actual magnet is closest? It will be the candidate magnet for
         % the update phase of the state estimator.
         oRealMagnet = round( oMeasMagnet ./ [xSpacing ; ySpacing ; 1] ) .* [xSpacing ; ySpacing ; 1] ;
+        % round...approximate  xSpacing...Array of magnets in the ground
 
         % The position of the real magnet in robot frame. It will in general 
         % be different from the measured one. 
@@ -111,8 +128,9 @@ for i = 2 : nbLoops
         % magnet in the robot frame.
         Yhat = mRealMagnet(1:2) ;
         
-        C = [ *** ] ;
-                      
+        C = [ -cos(X(3)) , -sin(X(3)) , -sin(X(3))*(oRealMagnet(1)-X(1))+cos(X(3))*(oRealMagnet(2)-X(2)) ;
+               sin(X(3)) , -cos(X(3)) , -sin(X(3))*(oRealMagnet(2)-X(2))-cos(X(3))*(oRealMagnet(1)-X(1)) ] ;     
+        
         innov = Y - Yhat ;   
         dMaha = sqrt( innov.' * inv( C*P*C.' + Qgamma) * innov ) ;
         
