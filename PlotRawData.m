@@ -21,8 +21,8 @@ RobotAndSensorDefinition ;  %define characteristics of the robot
 % Set the initial posture of the robot according to information given
 % in file "Programs and data".
 
-Xodo(:,1) = [ 0, 0, 0*pi/180 ].' ;    %for circles.txt, line1magnet.txt, oneloop.txt and twoloops.txt
-%Xodo(:,1) = [ 0, 0, pi/4 ].' ;    %for diagonal45degree.txt
+%Xodo(:,1) = [ 0, 0, 0*pi/180 ].' ;    %for circles.txt, line1magnet.txt, oneloop.txt and twoloops.txt
+Xodo(:,1) = [ 0, 0, pi/4 ].' ;    %for diagonal45degree.txt
 %Xodo(:,1) = [ 0, 27, 0*pi/180 ].' ;    %for line2magnets.txt
 
 
